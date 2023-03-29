@@ -33,7 +33,7 @@ void counting_sort(uint32_t arr[], int n) {
 
 int main() {
 
-  const int k = 1000000;
+  const int k = 50000;
   uint32_t arr[k];
   for (int i = 0; i < k; i++) {
     arr[i] = rand() % 100000;

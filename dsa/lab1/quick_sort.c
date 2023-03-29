@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
 void quick_sort(uint32_t arr[], int left, int right) {
   int i = left, j = right;
   int temp, pivot = arr[(left + right) / 2];
@@ -32,7 +31,7 @@ void quick_sort(uint32_t arr[], int left, int right) {
 }
 
 int main() {
-  const int k = 1000000;
+  const int k = 50000;
   uint32_t arr[k];
   for (int i = 0; i < k; i++) {
     arr[i] = rand() % 100000;
