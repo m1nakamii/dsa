@@ -1,4 +1,4 @@
-APP_NAME = main
+APP_NAME = app
 CC = gcc
 
 CFLAGS =
