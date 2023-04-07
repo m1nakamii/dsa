@@ -1,20 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>   // for clock_t, clock(), CLOCKS_PER_SEC
-#include <unistd.h> // for sleep
+#include <time.h>
+#include <unistd.h>
 
 #include "../libraries/bstree.h"
 #include "../libraries/hashtab.h"
 #include "../libraries/header.h"
 
 int main() {
-  struct listnode *hashtab[Hashtab_Size];
+  struct listnode *hashtab_KR[Hashtab_Size];
+  struct listnode *fnv1_32[Hashtab_Size];
+
   char words[MaxKeys][MaxKeyLenght];
 
-  struct bstree *tree_good, *tree_bad, *node_good, *node_bad;
-
-  double time_good = 0.0, time_bad = 0.0;
+  struct listnode *node_KR, *node_Add;
+  double time_KR = 0.0, time_Add = 0.0;
   clock_t begin, end;
 
   FILE *file = fopen("words.txt", "r");
@@ -27,31 +28,27 @@ int main() {
   }
   fclose(file);
 
-  printf("#\tGood\t\tBad\t\t\tGood key\t Bad key\n");
-  tree_good = bstree_create(words[0], 0);
-  tree_bad = bstree_create(words[0], 0);
+  printf("#\t   KR\t\t fnv \tcolizii_kr\t colizii_fnv\n");
+  hashtab_init(hashtab_KR);
+  hashtab_init(fnv1_32);
 
-  for (int i = 1; i < MaxKeys; i++) {
-    bstree_add(tree_good, words[i], i);
-    bstree_add_right(tree_bad, words[i], i);
+  for (int i = 0; i < MaxKeys; i++) {
+    hashtab_add(hashtab_KR, words[i], i);
+    hashtab_add_Add(fnv1_32, words[i], i);
     if ((i + 1) % 10000 == 0) {
-      // bstree
+      char *word = words[0];
       begin = clock();
-      node_good = bstree_min(tree_good);
+      node_KR = hashtab_lookup(hashtab_KR, word);
       end = clock();
-      time_good = (double)(end - begin) / CLOCKS_PER_SEC;
-
-      // hastab
       begin = clock();
-      node_bad = bstree_min(tree_bad);
+      node_Add = hashtab_lookup_Add(fnv1_32, word);
       end = clock();
-      time_bad = (double)(end - begin) / CLOCKS_PER_SEC;
-
-      printf("%d\t%f\t%f %20.25s %20.25s \t\n", i + 1, time_good, time_bad,
-             node_good->key, node_bad->key);
+      time_Add = (double)(end - begin) / CLOCKS_PER_SEC;
+      printf("%d\t %f\t%f\t %d \t%d\n", i + 1, time_KR, time_Add,
+             get_collisions(hashtab_KR), get_collisions(fnv1_32));
     }
   }
-  bstree_free(tree_good);
-  bstree_free(tree_bad);
+  free_table(hashtab_KR);
+  free_table(fnv1_32);
   return 0;
 }

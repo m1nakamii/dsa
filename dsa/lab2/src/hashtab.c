@@ -6,7 +6,6 @@
 #include "../libraries/hashtab.h"
 #include "../libraries/header.h"
 
-// KRHash
 unsigned int hashtab_hash(char *key) {
   unsigned int h = 0, hash_mul = 31;
   while (*key)
@@ -14,17 +13,22 @@ unsigned int hashtab_hash(char *key) {
   return h % Hashtab_Size;
 }
 
-// DJBHash
-unsigned int JenkinsHash(char *s) {
-  unsigned int h = 0;
-  while (*s) {
-    h += (unsigned int)*s++;
-    h += (h << 10);
-    h ^= (h >> 6);
+unsigned int fnv1_32(const void *data, size_t n) {
+  const unsigned int fnv_prime = 0x01000193;
+  unsigned int hash = 0x811c9dc5;
+  const unsigned char *d = (const unsigned char *)data;
+  size_t i;
+  for (i = 0; i < n; i++) {
+    hash = hash * fnv_prime;
+    hash = hash ^ d[i];
   }
-  h += (h << 3);
-  h ^= (h >> 11);
-  h += (h << 15);
+  return hash;
+}
+
+unsigned int AddHash(char *s) {
+  unsigned int h = 0;
+  while (*s)
+    h += (unsigned int)*s++;
   return h % Hashtab_Size;
 }
 
@@ -47,10 +51,10 @@ void hashtab_add(struct listnode **hashtab, char *key, int value) {
   }
 }
 
-void hashtab_add_DJB(struct listnode **hashtab, char *key, int value) {
+void hashtab_add_Add(struct listnode **hashtab, char *key, int value) {
   struct listnode *node;
 
-  int index = JenkinsHash(key);
+  unsigned int index = AddHash(key);
   node = (struct listnode *)malloc(sizeof(*node));
 
   if (node != NULL) {
@@ -61,10 +65,10 @@ void hashtab_add_DJB(struct listnode **hashtab, char *key, int value) {
   }
 }
 
-struct listnode *hashtab_lookup_DJB(struct listnode **hashtab, char *key) {
+struct listnode *hashtab_lookup_Add(struct listnode **hashtab, char *key) {
   struct listnode *node;
 
-  int index = JenkinsHash(key);
+  int index = AddHash(key);
   for (node = hashtab[index]; node != NULL; node = node->next) {
     if (0 == strcmp(node->key, key))
       return node;
@@ -98,10 +102,11 @@ void hashtab_delete(struct listnode **hashtab, char *key) {
   }
 }
 
-int get_collisions(struct listnode **hashtab){
+int get_collisions(struct listnode **hashtab) {
   int count = 0;
-  for(int i = 0; i < Hashtab_Size; i++){
-    for(struct listnode *j = !hashtab[i] ? NULL : hashtab[i]->next; j != NULL; j = j->next){
+  for (int i = 0; i < Hashtab_Size; i++) {
+    for (struct listnode *j = !hashtab[i] ? NULL : hashtab[i]->next; j != NULL;
+         j = j->next) {
       count += 1;
     }
   }
