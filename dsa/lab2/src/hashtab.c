@@ -13,16 +13,17 @@ unsigned int hashtab_hash(char *key) {
   return h % Hashtab_Size;
 }
 
-unsigned int fnv1_32(const void *data, size_t n) {
-  const unsigned int fnv_prime = 0x01000193;
-  unsigned int hash = 0x811c9dc5;
-  const unsigned char *d = (const unsigned char *)data;
-  size_t i;
-  for (i = 0; i < n; i++) {
-    hash = hash * fnv_prime;
-    hash = hash ^ d[i];
+const unsigned FNV_32_PRIME = 0x01000193;
+
+unsigned int fnv1_32(char *buf) {
+  unsigned int hval = 0x811c9dc5;
+
+  while (*buf) {
+    hval ^= (unsigned int)*buf++;
+    hval *= FNV_32_PRIME;
   }
-  return hash;
+
+  return hval;
 }
 
 unsigned int AddHash(char *s) {

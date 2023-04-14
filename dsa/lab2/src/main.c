@@ -41,7 +41,7 @@ int main() {
       node_KR = hashtab_lookup(hashtab_KR, word);
       end = clock();
       begin = clock();
-      node_Add = hashtab_lookup_Add(fnv1_32, word);
+      node_Add = hashtab_lookup(fnv1_32, word);
       end = clock();
       time_Add = (double)(end - begin) / CLOCKS_PER_SEC;
       printf("%d\t %f\t%f\t %d \t%d\n", i + 1, time_KR, time_Add,

@@ -16,4 +16,4 @@ struct listnode *hashtab_lookup_Add(struct listnode **hashtab, char *key);
 void hashtab_delete(struct listnode **hashtab, char *key);
 void free_table(struct listnode **hashtab);
 int get_collisions(struct listnode **hashtab);
-unsigned int fnv1_32(const void *data, size_t n);
+unsigned int fnv1_32(char *buf);

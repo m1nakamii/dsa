@@ -58,7 +58,6 @@ void bstree_add_right(struct bstree *tree, char *key, int value) {
     parent->right = node;
 }
 
-
 struct bstree *bstree_lookup(struct bstree *tree, char *key) {
   while (tree != NULL) {
     if (strcmp(key, tree->key) == 0)
@@ -95,7 +94,6 @@ struct bstree *bstree_delete(struct bstree *tree, char *key) {
   struct bstree *parent = NULL;
   struct bstree *node = tree;
 
-  // Find the node to be deleted and its parent
   while (node) {
     if (strcmp(key, node->key) == 0) {
       break;
@@ -108,15 +106,12 @@ struct bstree *bstree_delete(struct bstree *tree, char *key) {
     }
   }
 
-  // If the node was not found, return the original tree
   if (!node) {
     return tree;
   }
 
-  // If the node has no children, just remove it
   if (!node->left && !node->right) {
     if (!parent) {
-      // The node is the root of the tree
       free(node);
       return NULL;
     } else if (parent->left == node) {
@@ -125,12 +120,9 @@ struct bstree *bstree_delete(struct bstree *tree, char *key) {
       parent->right = NULL;
     }
     free(node);
-  }
-  // If the node has one child, replace it with its child
-  else if (!node->left || !node->right) {
+  } else if (!node->left || !node->right) {
     struct bstree *child = node->left ? node->left : node->right;
     if (!parent) {
-      // The node is the root of the tree
       free(node);
       return child;
     } else if (parent->left == node) {
@@ -139,10 +131,7 @@ struct bstree *bstree_delete(struct bstree *tree, char *key) {
       parent->right = child;
     }
     free(node);
-  }
-  // If the node has two children, replace it with the minimum node in its
-  // right subtree
-  else {
+  } else {
     struct bstree *successor = bstree_min(node->right);
     node->key = successor->key;
     node->value = successor->value;
@@ -170,8 +159,6 @@ void bstree_free(struct bstree *tree) {
       stack[top++] = current->left;
     if (current->right)
       stack[top++] = current->right;
-
-    // Увеличиваем размер стека, если он заполнен
     if (top == capacity) {
       capacity *= 2;
       stack =
